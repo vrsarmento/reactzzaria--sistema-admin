@@ -10,8 +10,24 @@ import {
   TableRow,
   Typography
 } from '@material-ui/core'
+import { useOrders } from 'hooks'
+import { singularOrPlural } from 'utils'
 
 function Orders () {
+  const { orders } = useOrders()
+
+  function getHour (date) {
+    const options = {
+      day: 'numeric',
+      month: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric'
+    }
+    return Intl.DateTimeFormat('pt-BR', options).format(date)
+  }
+
   return allOrderStatus.map(orderStatus => (
     <TableContainer key={orderStatus.title}>
       <TableTitle>
@@ -29,45 +45,76 @@ function Orders () {
         </THead>
 
         <TableBody>
-          <TableRow>
-            <TableCell>
-              <div>
-                <Subtitle>
-                  Horário do pedido: 10:20h
-                </Subtitle>
-              </div>
+          {orders?.map(order => {
+            const {
+              address,
+              number,
+              complement,
+              district,
+              code: cep,
+              city,
+              state,
+              obs
+            } = order.address
 
-              <div>
-                <Subtitle>
-                  Pedido:
-                </Subtitle>
+            return (
+              <TableRow key={order.id}>
+                <TableCell>
+                  <div>
+                    <Subtitle>
+                      Horário do pedido: {getHour(order.createdAt.toDate())}
+                    </Subtitle>
+                  </div>
 
-                <ul>
-                  <li>
+                  <div>
+                    <Subtitle>
+                      Pedido:
+                    </Subtitle>
+
+                    <ul>
+                      {order.pizzas.map((pizza, index) => (
+                        <li key={index}>
+                          <Typography>
+                            {pizza.quantity} {' '}
+                            {singularOrPlural(pizza.quantity, 'pizza', 'pizzas')}
+                            {' '}
+                            <b>{pizza.size.name.toUpperCase()}</b> de {' '}
+                            {pizza.flavours
+                              .map(flavour => flavour.name)
+                              .reduce((acc, flavour, index, array) => {
+                                if (index === 0) {
+                                  return flavour
+                                }
+                                if (index === array.length - 1) {
+                                  return acc + ' e ' + flavour
+                                }
+                                return acc + ', ' + flavour
+                              }, '')}
+                          </Typography>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div>
+                    <Subtitle>
+                      Endereço de entrega:
+                    </Subtitle>
+
                     <Typography>
-                      1 pizza MÉDIA de {' '}
-                      Frango com Catupiry e Calabresa
+                      {address}, {number && 'n° ' + number}
+                      {complement && ', ' + complement} <br />
+                      Bairro: {district} - CEP: {cep} <br />
+                      Cidade: {city}/{state}
+                      <br /> <br />
+                      Observação: {obs}
                     </Typography>
-                  </li>
-                </ul>
-              </div>
+                  </div>
 
-              <div>
-                <Subtitle>
-                  Endereço de entrega:
-                </Subtitle>
-
-                <Typography>
-                  Rua Tal, n° 92, {' '}
-                  apt 10 <br />
-                  Bairro: Xerelete - CEP: 00000-000 <br />
-                  Cidade: São Paulo/SP
-                </Typography>
-              </div>
-
-            </TableCell>
-          </TableRow>
-
+                </TableCell>
+              </TableRow>
+            )
+          })}
         </TableBody>
       </Table>
     </TableContainer>

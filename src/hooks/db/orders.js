@@ -1,8 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { db } from 'services/firebase'
 
 function useOrders () {
   const [orders, setOrders] = useState(null)
+
+  const status = useMemo(() => ({
+    pending: 'pending',
+    inProgress: 'inProgress',
+    outForDelivery: 'outForDelivery',
+    delivered: 'delivered'
+  }), [])
 
   useEffect(() => {
     let mounted = true
@@ -17,15 +24,28 @@ function useOrders () {
         })
       })
 
-      if (mounted) setOrders(docs)
+      const initialStatus = Object.keys(status).reduce((acc, status) => {
+        acc[status] = []
+        return acc
+      }, {})
+
+      const newOrders = docs.reduce((acc, doc) => {
+        const mainStatus = doc.status || status.pending
+        return {
+          ...acc,
+          [mainStatus]: acc[mainStatus].concat(doc)
+        }
+      }, initialStatus)
+
+      if (mounted) setOrders(newOrders)
     })
 
     return () => {
       mounted = false
     }
-  }, [])
+  }, [status])
 
-  return { orders }
+  return { orders, status }
 }
 
 export default useOrders

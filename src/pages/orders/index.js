@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import {
+  Fab,
   Paper,
   Table,
   TableBody,
@@ -10,24 +11,38 @@ import {
   TableRow,
   Typography
 } from '@material-ui/core'
+import {
+  Check,
+  DonutLarge,
+  Motorcycle
+} from '@material-ui/icons'
 import { useOrders } from 'hooks'
 import { singularOrPlural } from 'utils'
 
 function Orders () {
-  const { orders, status } = useOrders()
+  const { orders, status, updateOrder } = useOrders()
 
   const allOrderStatus = useMemo(() => [
     {
       title: 'Pedidos pendentes',
-      type: status.pending
+      type: status.pending,
+      nextAction: status.inProgress,
+      nextButtonTitle: 'Em produção',
+      icon: DonutLarge
     },
     {
       title: 'Pedidos em produção',
-      type: status.inProgress
+      type: status.inProgress,
+      nextAction: status.outForDelivery,
+      nextButtonTitle: 'Saiu para entrega',
+      icon: Motorcycle
     },
     {
       title: 'Saiu para entrega',
-      type: status.outForDelivery
+      type: status.outForDelivery,
+      nextAction: status.delivered,
+      nextButtonTitle: 'Entregue',
+      icon: Check
     },
     {
       title: 'Pedidos finalizados',
@@ -60,6 +75,13 @@ function Orders () {
                 Informações do pedido
               </Typography>
             </Th>
+            {orderStatus.nextAction && (
+              <Th align='center'>
+                <Typography>
+                  Mudar status
+                </Typography>
+              </Th>
+            )}
           </TableRow>
         </THead>
 
@@ -139,8 +161,22 @@ function Orders () {
                       Observação: {obs}
                     </Typography>
                   </div>
-
                 </TableCell>
+
+                {orderStatus.nextAction && (
+                  <TableCell align='center'>
+                    <Fab
+                      color='primary'
+                      title={`Mudar status para "${orderStatus.nextButtonTitle}"`}
+                      onClick={() => updateOrder({
+                        orderId: order.id,
+                        status: orderStatus.nextAction
+                      })}
+                    >
+                      <orderStatus.icon />
+                    </Fab>
+                  </TableCell>
+                )}
               </TableRow>
             )
           })}

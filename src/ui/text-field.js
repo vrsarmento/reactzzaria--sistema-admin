@@ -5,7 +5,7 @@ import {
   TextField as MaterialTextField
 } from '@material-ui/core'
 
-function TextField ({ autoFocus, xs, ...props }) {
+function TextField ({ autoFocus, xs = 12, ...props }) {
   return (
     <Grid item xs={xs}>
       <MaterialTextField

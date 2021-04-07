@@ -1,12 +1,18 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { db } from 'services/firebase'
+import { useMounted } from 'hooks'
 
 function useCollection (collection) {
   const [data, setData] = useState(null)
+  const { pathname } = useLocation()
+  const mounted = useMounted()
+
+  const add = useCallback((data) => {
+    db.collection(collection).add(data)
+  }, [collection])
 
   useEffect(() => {
-    let mounted = true
-
     db.collection(collection).get().then(querySnapshot => {
       const docs = []
 
@@ -17,15 +23,11 @@ function useCollection (collection) {
         })
       })
 
-      if (mounted) setData(docs)
+      if (mounted.current) setData(docs)
     })
+  }, [collection, pathname, mounted])
 
-    return () => {
-      mounted = false
-    }
-  }, [collection])
-
-  return data
+  return { data, add }
 }
 
 export default useCollection

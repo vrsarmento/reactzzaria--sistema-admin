@@ -22,7 +22,7 @@ import {
 } from 'ui'
 import { useCollection } from 'hooks'
 import { singularOrPlural } from 'utils'
-import { PIZZAS_SIZES, NEW } from 'routes'
+import { PIZZAS_SIZES, NEW, EDIT } from 'routes'
 
 function TablePizzasSizes () {
   const { data: pizzasSizes, remove } = useCollection('pizzasSizes')
@@ -62,7 +62,7 @@ function TablePizzasSizes () {
         </THead>
 
         <TableBody>
-          {pizzasSizes?.map(pizza => (
+          {pizzasSizes && pizzasSizes.map(pizza => (
             <TableRow key={pizza.id}>
               <TableCell><b>{pizza.name}</b></TableCell>
               <TableCell>{pizza.size} cm</TableCell>
@@ -73,7 +73,11 @@ function TablePizzasSizes () {
               </TableCell>
 
               <TableCell align='right'>
-                <Button startIcon={<Edit />}>
+                <Button
+                  startIcon={<Edit />}
+                  component={Link}
+                  to={`${PIZZAS_SIZES}${EDIT(pizza.id)}`}
+                >
                   Editar
                 </Button>
 

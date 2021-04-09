@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useReducer, useRef } from 'react'
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef
+} from 'react'
 import { Link, useHistory, useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import {
@@ -16,6 +22,11 @@ function FormRegisterSize () {
   const { initialState, pizza, add, edit } = usePizzaSize(id)
   const [pizzaEditable, dispatch] = useReducer(reducer, initialState)
   const nameField = useRef()
+
+  const texts = useMemo(() => ({
+    title: id ? 'Editar tamanho' : 'Cadastrar novo tamanho',
+    button: id ? 'Salvar' : 'Cadastrar'
+  }), [id])
 
   useEffect(() => {
     nameField.current.focus()
@@ -58,7 +69,7 @@ function FormRegisterSize () {
     <Container>
       <Grid item xs={12}>
         <Typography variant='h6'>
-          {!id ? 'Cadastrar novo tamanho' : 'Editar tamanho'}
+          {texts.title}
         </Typography>
       </Grid>
 
@@ -105,7 +116,7 @@ function FormRegisterSize () {
 
           <Grid item>
             <Button variant='contained' color='primary' type='submit'>
-              {!id ? 'Cadastrar' : 'Salvar'}
+              {texts.title}
             </Button>
           </Grid>
         </Grid>

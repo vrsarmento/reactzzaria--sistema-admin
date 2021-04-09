@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from 'react'
+import React, { lazy, Suspense, useCallback, useEffect } from 'react'
 import styled from 'styled-components'
 import { Link, Route, Switch, useLocation } from 'react-router-dom'
 import {
@@ -18,7 +18,13 @@ const PizzasFlavours = lazy(() => import('pages/pizzas-flavours'))
 const PizzasSizes = lazy(() => import('pages/pizzas-sizes'))
 
 const Main = () => {
+  useScrollToTop()
   const { pathname } = useLocation()
+
+  const getSelectedMenuItem = useCallback((item) => {
+    return pathname === item.link ||
+      (pathname.includes(item.link) && item.link !== routes.HOME)
+  }, [pathname])
 
   return (
     <>
@@ -41,7 +47,7 @@ const Main = () => {
               button
               component={Link}
               to={item.link}
-              selected={pathname === item.link}
+              selected={getSelectedMenuItem(item)}
             >
               <ListItemText>{item.label}</ListItemText>
             </ListItem>
@@ -62,6 +68,14 @@ const Main = () => {
       </Content>
     </>
   )
+}
+
+function useScrollToTop () {
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [pathname])
 }
 
 const menuItems = [

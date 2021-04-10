@@ -6,13 +6,12 @@ import React, {
   useRef
 } from 'react'
 import { Link, useHistory, useParams } from 'react-router-dom'
-import styled from 'styled-components'
 import {
   Button,
   Grid,
   Typography
 } from '@material-ui/core'
-import { TextField } from 'ui'
+import { FormContainer, Form, TextField } from 'ui'
 import { PIZZAS_SIZES } from 'routes'
 import { usePizzaSize } from 'hooks'
 
@@ -66,7 +65,7 @@ function FormRegisterSize () {
   }, [add, edit, history, pizzaEditable])
 
   return (
-    <Container>
+    <FormContainer>
       <Grid item xs={12}>
         <Typography variant='h6'>
           {texts.title}
@@ -116,29 +115,14 @@ function FormRegisterSize () {
 
           <Grid item>
             <Button variant='contained' color='primary' type='submit'>
-              {texts.title}
+              {texts.button}
             </Button>
           </Grid>
         </Grid>
       </Form>
-    </Container>
+    </FormContainer>
   )
 }
-
-const Container = styled(Grid).attrs({
-  container: true,
-  spacing: 2
-})`
-  margin-bottom: ${({ theme }) => theme.spacing(5)}px;
-`
-
-const Form = styled(Grid).attrs({
-  component: 'form',
-  container: true,
-  item: true,
-  spacing: 2,
-  xs: 12
-})``
 
 function reducer (state, action) {
   if (action.type === 'EDIT') {

@@ -14,13 +14,14 @@ import {
 } from '@material-ui/core'
 import { FormContainer, Form, TextField } from 'ui'
 import { PIZZAS_FLAVOURS } from 'routes'
-import { usePizzaSize } from 'hooks'
+import { useCollection, usePizzaFlavour } from 'hooks'
 
 function FormRegisterFlavour () {
   const history = useHistory()
   const { id } = useParams()
   const nameField = useRef()
-  const { initialState, pizza, add, edit } = usePizzaSize(id)
+  const { data: pizzasSizes } = useCollection('pizzasSizes')
+  const { initialState, pizza, add, edit } = usePizzaFlavour(id)
   const [pizzaEditable, dispatch] = useReducer(reducer, initialState)
 
   const texts = useMemo(() => ({
@@ -41,32 +42,36 @@ function FormRegisterFlavour () {
 
   const handleChange = useCallback((e) => {
     const { name, value } = e.target
+    const action = name.includes('size-') ? 'UPDATE_SIZE' : 'UPDATE_FIELD'
+    const fieldName = name.includes('size-') ? name.replace('size-', '') : name
+
     dispatch({
-      type: 'UPDATE_FIELD',
+      type: action,
       payload: {
-        [name]: value
+        [fieldName]: value
       }
     })
   }, [])
 
   const handleSubmit = useCallback(async (e) => {
     e.preventDefault()
-    const { id, name, image } = e.target.elements
+
+    const { id, ...data } = pizzaEditable
+
     const normalizedData = {
-      name: name.value,
-      image: image.value,
-      value: {
-        0: 10,
-        1: 20,
-        2: 30
-      }
+      ...data,
+      value: Object.entries(data.value)
+        .reduce((acc, [sizeId, value]) => {
+          acc[sizeId] = +value
+          return acc
+        }, {})
     }
 
     if (id) await edit(id, normalizedData)
     else await add(normalizedData)
 
     history.push(PIZZAS_FLAVOURS)
-  }, [add, edit, history])
+  }, [add, edit, history, pizzaEditable])
 
   return (
     <FormContainer>
@@ -96,23 +101,16 @@ function FormRegisterFlavour () {
           <InputLabel>Valores (em R$) para cada tamanho:</InputLabel>
         </Grid>
 
-        <TextField
-          label='Pequena'
-          name='size-0'
-          xs={3}
-        />
-
-        <TextField
-          label='Pequena'
-          name='size-0'
-          xs={3}
-        />
-
-        <TextField
-          label='Pequena'
-          name='size-0'
-          xs={3}
-        />
+        {pizzasSizes?.map(size => (
+          <TextField
+            key={size.id}
+            label={size.name}
+            name={'size-' + size.id}
+            value={pizzaEditable?.value[size.id] || ''}
+            onChange={handleChange}
+            xs={3}
+          />
+        ))}
 
         <Grid item container justify='flex-end' spacing={2}>
           <Grid item>
@@ -145,6 +143,16 @@ function reducer (state, action) {
     return {
       ...state,
       ...action.payload
+    }
+  }
+
+  if (action.type === 'UPDATE_SIZE') {
+    return {
+      ...state,
+      value: {
+        ...state.value,
+        ...action.payload
+      }
     }
   }
 

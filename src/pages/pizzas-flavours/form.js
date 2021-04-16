@@ -106,7 +106,7 @@ function FormRegisterFlavour () {
             key={size.id}
             label={size.name}
             name={'size-' + size.id}
-            value={pizzaEditable?.value[size.id] || ''}
+            value={pizzaEditable.value[size.id] || ''}
             onChange={handleChange}
             xs={3}
           />

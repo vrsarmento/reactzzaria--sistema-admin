@@ -2,6 +2,7 @@ import React, { lazy, Suspense, useCallback, useEffect } from 'react'
 import styled from 'styled-components'
 import { Link, Route, Switch, useLocation } from 'react-router-dom'
 import {
+  Button,
   Divider,
   Drawer as MaterialDrawer,
   LinearProgress,
@@ -10,6 +11,7 @@ import {
   ListItemText,
   Typography
 } from '@material-ui/core'
+import { useAuth } from 'hooks'
 
 import * as routes from 'routes'
 
@@ -20,6 +22,7 @@ const PizzasSizes = lazy(() => import('pages/pizzas-sizes'))
 const Main = () => {
   useScrollToTop()
   const { pathname } = useLocation()
+  const { logout } = useAuth()
 
   const getSelectedMenuItem = useCallback((item) => {
     return pathname === item.link ||
@@ -53,6 +56,8 @@ const Main = () => {
             </ListItem>
           ))}
         </List>
+
+        <ButtonLogout onClick={logout}>Sair</ButtonLogout>
       </Drawer>
 
       <Content>
@@ -113,6 +118,12 @@ const DrawerContent = styled.div`
   flex-direction: column;
   padding: ${({ theme }) => theme.spacing(1)}px;
   text-align: center;
+`
+
+const ButtonLogout = styled(Button).attrs({
+  variant: 'contained'
+})`
+  justify-self: flex-end;
 `
 
 export default Main

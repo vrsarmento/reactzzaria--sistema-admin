@@ -1,8 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Button, Grid } from '@material-ui/core'
+import { Button, Grid, Typography } from '@material-ui/core'
 import { useAuth } from 'hooks'
-import { ReactComponent as LogoSvg } from 'images/logo-react-zzaria.svg'
 
 function Login () {
   const { login } = useAuth()
@@ -10,8 +9,9 @@ function Login () {
   return (
     <Container>
       <Grid container justify='center' spacing={5}>
-        <Grid item xs={12}>
-          <Logo />
+        <Grid item>
+          <Title>React-zzaria</Title>
+          <Description>Sistema de administração</Description>
         </Grid>
 
         <Grid item xs={12} container justify='center'>
@@ -28,8 +28,25 @@ const Container = styled.div`
   padding: ${({ theme }) => theme.spacing(3)}px;
 `
 
-const Logo = styled(LogoSvg)`
-  width: 100%;
+const Title = styled(Typography).attrs({
+  variant: 'h2'
+})`
+  font-weight: bold;
+  text-align: center;
+  position: relative;
+
+  &::after {
+    content: '';
+    border-bottom: 1px solid #000;
+    position: absolute;
+    left: 0;
+    bottom: -12px;
+    width: 120px;
+  }
+`
+
+const Description = styled(Typography)`
+  text-align: right;
 `
 
 const GitHubButton = styled(Button).attrs({

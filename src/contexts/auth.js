@@ -22,6 +22,7 @@ function AuthProvider ({ children }) {
         role: 'user'
       })
     })
+      .catch(() => {})
   }, [userInfo])
 
   const login = useCallback(() => {

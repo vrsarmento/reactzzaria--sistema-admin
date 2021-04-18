@@ -65,6 +65,14 @@ function TablePizzasSizes () {
         </THead>
 
         <TableBody>
+          {pizzasSizes?.length === 0 && (
+            <TableRow>
+              <TableCell>
+                Ainda não há tamanhos de pizzas cadastrados.
+              </TableCell>
+            </TableRow>
+          )}
+
           {pizzasSizes && pizzasSizes.map(pizza => (
             <TableRow key={pizza.id}>
               <TableCell><b>{pizza.name}</b></TableCell>
